@@ -1,0 +1,201 @@
+:root {
+  --bg: #f3f3f3;
+  --surface: #ffffff;
+  --text: #1b1b1b;
+  --muted: #6b6b6b;
+  --border: #dcdcdc;
+  --accent: #2563eb;
+  --hover: #e8e8e8;
+  --page-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1e1e1e;
+    --surface: #262626;
+    --text: #e6e6e6;
+    --muted: #9a9a9a;
+    --border: #3a3a3a;
+    --accent: #60a5fa;
+    --hover: #333333;
+    --page-shadow: 0 1px 6px rgba(0, 0, 0, .6);
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.5 "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 3px 10px;
+  cursor: pointer;
+}
+button:hover { background: var(--hover); }
+button:disabled { opacity: .4; cursor: default; background: transparent; }
+
+#toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex: none;
+}
+#toolbar .spacer { flex: 1; }
+#toolbar .group { display: flex; }
+#btn-zoom-reset { min-width: 56px; }
+#file-name {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#find-bar {
+  display: flex;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex: none;
+}
+#find-input {
+  width: 280px;
+  font: inherit;
+  color: inherit;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+#viewport {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+#viewport.drag-over { outline: 3px dashed var(--accent); outline-offset: -8px; }
+
+.message {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--muted);
+  text-align: center;
+  padding: 16px;
+}
+.message .big { font-size: 22px; color: var(--text); }
+.message .hint { font-size: 12px; margin-top: 12px; }
+.message.error .big { color: #d33; }
+
+/* Column flex all the way down so formats can stretch to the window height. */
+#content { min-height: 100%; display: flex; flex-direction: column; }
+#content > .doc { flex: 1 0 auto; display: flex; flex-direction: column; }
+#content > .doc > .media, #content > .doc > .markdown, #content > .doc > .sheet { flex: 1 0 auto; }
+
+/* Fill the viewport for formats that bring their own scrolling (PDF, media). */
+#content.fill, #content.fill > .doc { height: 100%; }
+#content.fill iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+.media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 16px;
+}
+.media img, .media video { max-width: 100%; max-height: calc(100vh - 80px); }
+.media img.actual { max-width: none; max-height: none; }
+.media img { cursor: zoom-in; background: repeating-conic-gradient(#ccc 0 25%, #fff 0 50%) 0 0 / 16px 16px; }
+.media img.actual { cursor: zoom-out; }
+
+pre.text {
+  margin: 0;
+  padding: 16px 20px;
+  font: 13px/1.5 Consolas, "Cascadia Mono", monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  tab-size: 4;
+}
+pre.text code.hljs { background: transparent; padding: 0; }
+
+.markdown {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 32px 64px;
+  background: var(--surface);
+  min-height: 100%;
+}
+.markdown img { max-width: 100%; }
+.markdown pre { background: var(--bg); padding: 12px; border-radius: 6px; overflow: auto; }
+.markdown code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 13px; }
+.markdown table { border-collapse: collapse; }
+.markdown th, .markdown td { border: 1px solid var(--border); padding: 4px 10px; }
+.markdown blockquote { margin: 0; padding-left: 14px; border-left: 3px solid var(--border); color: var(--muted); }
+.markdown a { color: var(--accent); }
+
+/* docx-preview: keep its white pages, swap its grey backdrop for ours. */
+.docx-host .docx-wrapper { background: var(--bg); padding: 24px 16px; }
+.docx-host .docx-wrapper > section.docx { box-shadow: var(--page-shadow); margin-bottom: 24px; }
+
+/* Spreadsheets */
+.sheet { flex: 1; }
+.sheet table { border-collapse: collapse; font-size: 13px; background: var(--surface); table-layout: auto; }
+.sheet th, .sheet td { border: 1px solid var(--border); padding: 2px 6px; white-space: pre; vertical-align: bottom; max-width: 480px; overflow: hidden; text-overflow: ellipsis; }
+.sheet th { background: var(--bg); color: var(--muted); font-weight: normal; position: sticky; top: 0; z-index: 1; }
+.sheet tbody th { position: sticky; left: 0; top: auto; text-align: right; min-width: 40px; }
+.sheet thead th:first-child { left: 0; z-index: 2; }
+.sheet td.num { text-align: right; }
+.sheet td.merged { text-align: center; vertical-align: middle; }
+.sheet td.formula { color: var(--muted); font-style: italic; }
+.sheet td.err { color: #d33; }
+.sheet-note { color: var(--muted); padding: 8px 12px; margin: 0; }
+.sheet-tabs { position: sticky; bottom: 0; left: 0; display: flex; gap: 2px; padding: 4px 8px; background: var(--surface); border-top: 1px solid var(--border); overflow-x: auto; }
+.sheet-tabs button { white-space: nowrap; }
+.sheet-tabs button.active { background: var(--bg); border-color: var(--border); color: var(--accent); }
+
+/* pptx-preview */
+.pptx-host { display: flex; justify-content: center; padding: 24px 16px; }
+.pptx-host .pptx-preview-wrapper { background: transparent !important; overflow: visible !important; height: auto !important; }
+.pptx-host .pptx-preview-slide-wrapper { box-shadow: var(--page-shadow); margin: 0 auto 24px !important; }
+
+@media print {
+  #toolbar, #find-bar, .sheet-tabs { display: none !important; }
+  html, body, #viewport { height: auto; overflow: visible; background: #fff; }
+  #content { zoom: 1 !important; }
+}
+
+/* A white "sheet of paper" for formats without their own page layout (RTF). */
+.paper {
+  max-width: 820px;
+  margin: 24px auto;
+  padding: 64px 72px;
+  background: #fff;
+  color: #000;
+  box-shadow: var(--page-shadow);
+  min-height: calc(100% - 48px);
+}

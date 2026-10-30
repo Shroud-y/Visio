@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visio</title>
+  <link rel="icon" href="favicon.png">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <header id="toolbar">
+    <button id="btn-open" title="Відкрити (Ctrl+O)">Відкрити</button>
+    <span id="file-name"></span>
+    <span class="spacer"></span>
+    <div id="zoom" class="group" hidden>
+      <button id="btn-zoom-out" title="Зменшити (Ctrl+-)">−</button>
+      <button id="btn-zoom-reset" title="100% (Ctrl+0)">100%</button>
+      <button id="btn-zoom-in" title="Збільшити (Ctrl+=)">+</button>
+    </div>
+    <button id="btn-find" title="Пошук (Ctrl+F)" hidden>Пошук</button>
+  </header>
+
+  <div id="find-bar" hidden>
+    <input id="find-input" type="search" placeholder="Знайти в документі" autocomplete="off">
+    <button id="find-prev" title="Попереднє (Shift+Enter)">↑</button>
+    <button id="find-next" title="Наступне (Enter)">↓</button>
+    <button id="find-close" title="Закрити (Esc)">✕</button>
+  </div>
+
+  <main id="viewport">
+    <div id="empty" class="message">
+      <div class="big">Перетягніть файл сюди</div>
+      <div>або натисніть «Відкрити» (Ctrl+O)</div>
+      <div class="hint">PDF · DOCX · XLSX · CSV · PPTX · RTF · MD · TXT · зображення · відео</div>
+    </div>
+    <div id="content" hidden></div>
+    <div id="status" class="message" hidden></div>
+  </main>
+
+  <input id="file-input" type="file" hidden>
+  <script src="app.js"></script>
+  <script src="formats.js"></script>
+</body>
+</html>
