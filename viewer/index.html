@@ -18,7 +18,17 @@
       <button id="btn-zoom-in" title="Zoom in (Ctrl+=)">+</button>
     </div>
     <button id="btn-find" title="Find (Ctrl+F)" hidden>Find</button>
+    <div id="menu-wrap" hidden>
+      <button id="btn-menu" title="More" aria-haspopup="menu" aria-expanded="false">⋯</button>
+      <div id="menu" role="menu" hidden>
+        <button role="menuitem" data-item="default">Set as default viewer…</button>
+        <button role="menuitem" data-item="updates">Check for updates</button>
+        <button role="menuitem" data-item="about">About Visio</button>
+      </div>
+    </div>
   </header>
+
+  <div id="banners"></div>
 
   <div id="find-bar" hidden>
     <input id="find-input" type="search" placeholder="Find in document" autocomplete="off">

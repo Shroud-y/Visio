@@ -12,13 +12,27 @@ Get the latest zip from **[Releases](https://github.com/Shroud-y/Visio/releases/
 Requires Windows 10/11 x64 with the WebView2 Runtime (built into Windows 11). The app isn't code-signed, so SmartScreen
 may warn on first launch: **More info > Run anyway**.
 
-To add Visio to Explorer's **Open with** menu (current user only, no admin rights), run from the unzipped folder:
+On first launch Visio offers to become your default viewer (also in the **⋯** menu). Windows doesn't let apps set
+themselves as default, so Visio registers itself (current user only, no admin rights) and opens
+**Settings > Default apps > Visio**, where one click on **Set default** finishes the job. If you move the folder, Visio
+updates its registration on the next launch. For scripted setups, or to remove the registration:
 
 ```bash
 powershell -ExecutionPolicy Bypass -File register.ps1
 ```
 
-Undo with `register.ps1 -Uninstall`.
+```bash
+powershell -ExecutionPolicy Bypass -File register.ps1 -Uninstall
+```
+
+## Features
+
+- **Auto-reload**: when the open file changes on disk (re-saved, replaced), Visio reloads it and keeps zoom and scroll.
+- **Remembers the window** size, position and maximized state.
+- **Update notice**: once a day Visio asks GitHub for the latest release and shows a banner if there is a newer one.
+  Nothing is downloaded or installed automatically. Check by hand from the **⋯** menu.
+
+Settings live in `%LOCALAPPDATA%\Visio\settings.json` (set `"CheckForUpdates": false` to turn off the update check).
 
 ## Supported formats
 
@@ -67,7 +81,7 @@ the zips as artifacts. The release text comes from [.github/release-notes.md](.g
   open `/viewer/index.html?src=../samples/document.docx`.
 - `src/Visio/` — WPF host with WebView2: window, open dialog, serving files to the page (`DocServer`), LibreOffice
   conversion (`Converter`).
-- `tools/` — `package.ps1` (release zips), `register.ps1` ("Open with"), `make_samples.py` (test documents).
+- `tools/` — `package.ps1` (release zips), `register.ps1` (scripted file-type registration), `make_samples.py` (test documents).
 
 ## License
 

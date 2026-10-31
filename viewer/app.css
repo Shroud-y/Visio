@@ -71,6 +71,42 @@ button:disabled { opacity: .4; cursor: default; background: transparent; }
   white-space: nowrap;
 }
 
+#menu-wrap { position: relative; }
+#btn-menu { font-size: 18px; line-height: 20px; padding: 1px 10px; }
+#menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .2);
+}
+#menu button { text-align: left; padding: 6px 10px; }
+
+/* Banners: one-line notices from the host (default app, updates). */
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  flex: none;
+}
+.banner .text { flex: 1; min-width: 0; }
+.banner .detail { color: var(--muted); margin-left: 6px; }
+.banner button { white-space: nowrap; }
+.banner button.primary { background: var(--accent); color: #fff; }
+.banner button.primary:hover { filter: brightness(1.1); }
+@media (prefers-color-scheme: dark) { .banner button.primary { color: #111; } }
+
 #find-bar {
   display: flex;
   gap: 4px;
@@ -184,7 +220,7 @@ pre.text code.hljs { background: transparent; padding: 0; }
 .pptx-host .pptx-preview-slide-wrapper { box-shadow: var(--page-shadow); margin: 0 auto 24px !important; }
 
 @media print {
-  #toolbar, #find-bar, .sheet-tabs { display: none !important; }
+  #toolbar, #find-bar, #banners, .sheet-tabs { display: none !important; }
   html, body, #viewport { height: auto; overflow: visible; background: #fff; }
   #content { zoom: 1 !important; }
 }

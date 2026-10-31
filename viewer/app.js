@@ -154,10 +154,12 @@ function showMessage(title, detail, isError) {
   el.status.hidden = false;
 }
 
-async function openSource(src) {
+// `keepView`: the same file changed on disk; keep zoom and scroll position.
+async function openSource(src, keepView) {
   const seq = ++openSeq;
   if (current) current.dispose();
   current = src;
+  const view = keepView ? { zoom, top: el.viewport.scrollTop, left: el.viewport.scrollLeft } : null;
 
   document.title = `${src.name} — Visio`;
   el.fileName.textContent = src.name;
@@ -182,7 +184,7 @@ async function openSource(src) {
     el.content.classList.toggle('fill', fill);
     el.zoom.hidden = fill;
     el.btnFind.hidden = renderer ? !renderer.find : false;
-    setZoom(1);
+    setZoom(view ? view.zoom : 1);
 
     // Each open renders into its own box, so a slow render that finishes after
     // the user opened another file writes into a detached node, not the new one.
@@ -193,6 +195,10 @@ async function openSource(src) {
     if (seq !== openSeq) return;
     el.status.hidden = true;
     el.content.hidden = false;
+    if (view) {
+      el.viewport.scrollTop = view.top;
+      el.viewport.scrollLeft = view.left;
+    }
   } catch (err) {
     if (seq !== openSeq) return;
     console.error(err);
@@ -317,6 +323,66 @@ document.addEventListener('drop', (e) => {
 });
 
 // ---------------------------------------------------------------------------
+// "⋯" menu and banners (host mode only: both are driven by the host).
+// ---------------------------------------------------------------------------
+const menu = $('menu');
+const btnMenu = $('btn-menu');
+
+function setMenu(open) {
+  menu.hidden = !open;
+  btnMenu.setAttribute('aria-expanded', String(open));
+}
+
+btnMenu.onclick = (e) => { e.stopPropagation(); setMenu(menu.hidden); };
+menu.onclick = (e) => {
+  const item = e.target.closest('[data-item]');
+  if (!item) return;
+  setMenu(false);
+  host.postMessage({ type: 'menu', item: item.dataset.item });
+};
+document.addEventListener('click', (e) => { if (!menu.hidden && !menu.contains(e.target)) setMenu(false); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) setMenu(false); });
+window.addEventListener('blur', () => setMenu(false));
+
+// { id, text, detail?, actions: [{ id, label }] } — the first action is the primary one.
+// Clicking any action (or ✕, action "dismiss") closes the banner and reports back.
+function showBanner(b) {
+  closeBanner(b.id);
+  const bar = document.createElement('div');
+  bar.className = 'banner';
+  bar.dataset.id = b.id;
+  bar.setAttribute('role', 'status');
+  const text = document.createElement('span');
+  text.className = 'text';
+  text.textContent = b.text;
+  if (b.detail) {
+    const d = document.createElement('span');
+    d.className = 'detail';
+    d.textContent = b.detail;
+    text.appendChild(d);
+  }
+  bar.appendChild(text);
+  const actions = [...(b.actions || []), { id: 'dismiss', label: '✕', title: 'Close' }];
+  actions.forEach((a, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = a.label;
+    if (a.title) btn.title = a.title;
+    if (i === 0 && a.id !== 'dismiss') btn.className = 'primary';
+    btn.onclick = () => {
+      bar.remove();
+      host.postMessage({ type: 'banner-action', id: b.id, action: a.id });
+    };
+    bar.appendChild(btn);
+  });
+  $('banners').appendChild(bar);
+}
+
+function closeBanner(id) {
+  const old = document.querySelector(`.banner[data-id="${CSS.escape(id)}"]`);
+  if (old) old.remove();
+}
+
+// ---------------------------------------------------------------------------
 // Host messages
 // ---------------------------------------------------------------------------
 // Runs after formats.js has registered the renderers.
@@ -324,10 +390,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (host) {
     host.addEventListener('message', (e) => {
       const m = e.data || {};
-      if (m.type === 'open') openSource(new Source({ name: m.name, url: m.url, ext: m.format }));
+      if (m.type === 'open') openSource(new Source({ name: m.name, url: m.url, ext: m.format }), !!m.reload);
       else if (m.type === 'status') { el.empty.hidden = true; el.content.hidden = true; showMessage(m.title, m.detail); }
       else if (m.type === 'error') { el.empty.hidden = true; el.content.hidden = true; showMessage(m.title, m.detail, true); }
+      else if (m.type === 'banner') showBanner(m);
+      else if (m.type === 'banner-close') closeBanner(m.id);
     });
+    $('menu-wrap').hidden = false;
     host.postMessage({ type: 'ready' });
   } else {
     // Browser testing: index.html?src=path/to/file.docx

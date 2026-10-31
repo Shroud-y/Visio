@@ -12,13 +12,11 @@ Requires Windows 10 or 11 (x64) with the WebView2 Runtime, which Windows 11 alre
 ## Install
 
 1. Unzip anywhere, e.g. `C:\Users\<you>\Apps\Visio`.
-2. Run `Visio.exe`, then open a file with **Ctrl+O** or drag it into the window.
-3. Optional: add Visio to Explorer's **Open with** menu (current user only, no admin rights):
-   ```
-   powershell -ExecutionPolicy Bypass -File register.ps1
-   ```
-   To make it the default for a type: right-click a file > Open with > Choose another app > Visio > Always.
-   Undo with `register.ps1 -Uninstall`.
+2. Run `Visio.exe`. On first launch it offers to become your default viewer: click **Set as default**, then
+   **Set default** on the Settings page that opens (current user only, no admin rights).
+3. Open a file with **Ctrl+O**, drag it into the window, or double-click it in Explorer.
+
+To remove the file associations later: `powershell -ExecutionPolicy Bypass -File register.ps1 -Uninstall`.
 
 **"Windows protected your PC"**: the app isn't code-signed, so SmartScreen may warn on first launch.
 Click **More info > Run anyway**.
