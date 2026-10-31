@@ -18,7 +18,7 @@ register(['png', 'jpg', 'jpeg', 'jfif', 'gif', 'webp', 'avif', 'bmp', 'ico', 'sv
   const img = new Image();
   img.alt = src.name;
   img.onload = () => resolve();
-  img.onerror = () => reject(new Error('Зображення пошкоджене або формат не підтримується'));
+  img.onerror = () => reject(new Error('The image is damaged or its format is not supported'));
   img.onclick = () => img.classList.toggle('actual');
   img.src = src.url;
   wrap.appendChild(img);
@@ -33,7 +33,7 @@ register(['mp4', 'm4v', 'webm', 'ogv', 'mov', 'mp3', 'm4a', 'wav', 'ogg', 'oga',
   const media = document.createElement(isAudio ? 'audio' : 'video');
   media.controls = true;
   media.onloadedmetadata = () => resolve();
-  media.onerror = () => reject(new Error('Медіафайл пошкоджений або кодек не підтримується'));
+  media.onerror = () => reject(new Error('The media file is damaged or its codec is not supported'));
   media.src = src.url;
   wrap.appendChild(media);
   box.appendChild(wrap);
@@ -156,7 +156,7 @@ function buildSheet(ws) {
   if (!ws || !ws['!ref']) {
     const p = document.createElement('p');
     p.className = 'sheet-note';
-    p.textContent = 'Аркуш порожній';
+    p.textContent = 'This sheet is empty';
     frag.appendChild(p);
     return frag;
   }
@@ -225,7 +225,7 @@ function buildSheet(ws) {
   if (lastRow < range.e.r || lastCol < range.e.c) {
     const p = document.createElement('p');
     p.className = 'sheet-note';
-    p.textContent = `Показано перші ${lastRow - range.s.r + 1} рядків і ${lastCol - range.s.c + 1} стовпців із ${range.e.r - range.s.r + 1} × ${range.e.c - range.s.c + 1}.`;
+    p.textContent = `Showing the first ${lastRow - range.s.r + 1} rows and ${lastCol - range.s.c + 1} columns of ${range.e.r - range.s.r + 1} × ${range.e.c - range.s.c + 1}.`;
     frag.appendChild(p);
   }
   return frag;

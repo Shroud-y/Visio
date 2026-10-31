@@ -32,7 +32,7 @@ function loadScript(src) {
       const s = document.createElement('script');
       s.src = src;
       s.onload = resolve;
-      s.onerror = () => { loaded.delete(src); reject(new Error('Не вдалося завантажити ' + src)); };
+      s.onerror = () => { loaded.delete(src); reject(new Error('Could not load ' + src)); };
       document.head.appendChild(s);
     }));
   }
@@ -66,7 +66,7 @@ class Source {
         this._buffer = await this.blob.arrayBuffer();
       } else {
         const r = await fetch(this.url);
-        if (!r.ok) throw new Error(`Не вдалося прочитати файл (${r.status})`);
+        if (!r.ok) throw new Error(`Could not read the file (${r.status})`);
         this._buffer = await r.arrayBuffer();
       }
     }
@@ -167,14 +167,14 @@ async function openSource(src) {
   el.content.className = '';
   el.viewport.scrollTop = 0;
   closeFind();
-  showMessage('Відкриття…', src.name);
+  showMessage('Opening…', src.name);
 
   let renderer = pickRenderer(src.ext);
   let render = renderer ? renderer.render : null;
   try {
     if (!renderer) {
       if (looksBinary(await src.buffer())) {
-        throw new Error(`Формат «.${src.ext || '?'}» не підтримується`);
+        throw new Error(`The .${src.ext || '?'} format is not supported`);
       }
       render = (s, box) => renderText(s, box);
     }
@@ -198,7 +198,7 @@ async function openSource(src) {
     console.error(err);
     el.content.replaceChildren();
     el.zoom.hidden = el.btnFind.hidden = true;
-    showMessage('Не вдалося відкрити файл', err && err.message ? err.message : String(err), true);
+    showMessage('Could not open the file', err && err.message ? err.message : String(err), true);
   }
 }
 

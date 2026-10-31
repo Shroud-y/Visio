@@ -10,6 +10,7 @@
     <Product>Visio</Product>
     <Description>Lightweight read-only document viewer</Description>
     <Version>0.1.0</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <ApplicationIcon>visio.ico</ApplicationIcon>
     <!-- Publish: one framework-dependent exe (+ the viewer folder). Needs .NET 8 Desktop Runtime. -->

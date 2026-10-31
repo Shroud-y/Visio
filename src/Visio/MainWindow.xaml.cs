@@ -17,12 +17,12 @@ public partial class MainWindow : Window
     private static readonly string AppOrigin = $"https://{AppHost}/";
 
     private static readonly string OpenFilter = string.Join("|",
-        "Усі підтримувані|*.pdf;*.docx;*.docm;*.dotx;*.doc;*.rtf;*.odt;*.xlsx;*.xlsm;*.xlsb;*.xls;*.ods;*.csv;*.tsv;*.pptx;*.ppsx;*.ppt;*.odp;*.md;*.txt;*.log;*.json;*.xml;*.png;*.jpg;*.jpeg;*.gif;*.webp;*.bmp;*.svg;*.mp4;*.webm;*.mp3;*.wav",
-        "Документи|*.pdf;*.docx;*.docm;*.dotx;*.doc;*.rtf;*.odt;*.md;*.txt",
-        "Таблиці|*.xlsx;*.xlsm;*.xlsb;*.xls;*.ods;*.csv;*.tsv",
-        "Презентації|*.pptx;*.ppsx;*.ppt;*.odp",
-        "Зображення|*.png;*.jpg;*.jpeg;*.gif;*.webp;*.bmp;*.svg;*.ico",
-        "Усі файли|*.*");
+        "All supported|*.pdf;*.docx;*.docm;*.dotx;*.doc;*.rtf;*.odt;*.xlsx;*.xlsm;*.xlsb;*.xls;*.ods;*.csv;*.tsv;*.pptx;*.ppsx;*.ppt;*.odp;*.md;*.txt;*.log;*.json;*.xml;*.png;*.jpg;*.jpeg;*.gif;*.webp;*.bmp;*.svg;*.mp4;*.webm;*.mp3;*.wav",
+        "Documents|*.pdf;*.docx;*.docm;*.dotx;*.doc;*.rtf;*.odt;*.md;*.txt",
+        "Spreadsheets|*.xlsx;*.xlsm;*.xlsb;*.xls;*.ods;*.csv;*.tsv",
+        "Presentations|*.pptx;*.ppsx;*.ppt;*.odp",
+        "Images|*.png;*.jpg;*.jpeg;*.gif;*.webp;*.bmp;*.svg;*.ico",
+        "All files|*.*");
 
     private DocServer? _docs;
     private string? _pendingPath;
@@ -54,7 +54,7 @@ public partial class MainWindow : Window
         catch (WebView2RuntimeNotFoundException)
         {
             MessageBox.Show(this,
-                "Не знайдено Microsoft Edge WebView2 Runtime.\nВстановіть його з https://go.microsoft.com/fwlink/p/?LinkId=2124703",
+                "Microsoft Edge WebView2 Runtime was not found.\nInstall it from https://go.microsoft.com/fwlink/p/?LinkId=2124703",
                 "Visio", MessageBoxButton.OK, MessageBoxImage.Error);
             Close();
             return;
@@ -125,7 +125,7 @@ public partial class MainWindow : Window
 
     private void PickFile()
     {
-        var dlg = new OpenFileDialog { Filter = OpenFilter, Title = "Відкрити документ" };
+        var dlg = new OpenFileDialog { Filter = OpenFilter, Title = "Open document" };
         if (_currentPath != null) dlg.InitialDirectory = Path.GetDirectoryName(_currentPath);
         if (dlg.ShowDialog(this) == true) OpenFile(dlg.FileName);
     }
@@ -144,7 +144,7 @@ public partial class MainWindow : Window
         // Files dropped from a zip or a browser have no path on disk.
         if (string.IsNullOrWhiteSpace(path))
         {
-            Post(new { type = "error", title = "Цей файл не можна відкрити напряму", detail = "Спочатку збережіть його на диск." });
+            Post(new { type = "error", title = "This file can't be opened directly", detail = "Save it to disk first." });
             return;
         }
         try
@@ -153,12 +153,12 @@ public partial class MainWindow : Window
         }
         catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException)
         {
-            Post(new { type = "error", title = "Некоректний шлях", detail = path });
+            Post(new { type = "error", title = "Invalid path", detail = path });
             return;
         }
         if (!File.Exists(path))
         {
-            Post(new { type = "error", title = "Файл не знайдено", detail = path });
+            Post(new { type = "error", title = "File not found", detail = path });
             return;
         }
 
@@ -179,13 +179,13 @@ public partial class MainWindow : Window
             Post(new
             {
                 type = "error",
-                title = $"Для формату «{Path.GetExtension(path)}» потрібен LibreOffice",
-                detail = "Встановіть безкоштовний LibreOffice (libreoffice.org) — Visio використає його для перетворення файлу на PDF.",
+                title = $"Opening {Path.GetExtension(path)} files requires LibreOffice",
+                detail = "Install the free LibreOffice (libreoffice.org) and Visio will use it to convert the file to PDF.",
             });
             return;
         }
 
-        Post(new { type = "status", title = "Перетворення документа…", detail = name });
+        Post(new { type = "status", title = "Converting document…", detail = name });
         try
         {
             var pdf = await Converter.ToPdfAsync(path, soffice);
@@ -193,7 +193,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            if (seq == _openSeq) Post(new { type = "error", title = "Не вдалося відкрити файл", detail = ex.Message });
+            if (seq == _openSeq) Post(new { type = "error", title = "Could not open the file", detail = ex.Message });
         }
     }
 

@@ -74,7 +74,7 @@ internal static class Converter
                 psi.ArgumentList.Add(arg);
             }
 
-            using var proc = Process.Start(psi) ?? throw new InvalidOperationException("Не вдалося запустити LibreOffice");
+            using var proc = Process.Start(psi) ?? throw new InvalidOperationException("Could not start LibreOffice");
             var stderr = proc.StandardError.ReadToEndAsync();
             _ = proc.StandardOutput.ReadToEndAsync();
             using var timeout = new CancellationTokenSource(TimeSpan.FromMinutes(2));
@@ -85,13 +85,13 @@ internal static class Converter
             catch (OperationCanceledException)
             {
                 proc.Kill(entireProcessTree: true);
-                throw new TimeoutException("LibreOffice не встиг сконвертувати файл за 2 хвилини");
+                throw new TimeoutException("LibreOffice did not finish converting the file within 2 minutes");
             }
 
             var output = Path.Combine(work, "input.pdf");
             if (!File.Exists(output))
             {
-                throw new InvalidOperationException("LibreOffice не зміг сконвертувати файл. " + (await stderr).Trim());
+                throw new InvalidOperationException("LibreOffice could not convert the file. " + (await stderr).Trim());
             }
             File.Move(output, cached, overwrite: true);
             return cached;

@@ -1,0 +1,59 @@
+name: Release
+
+# Push a tag like v0.2.0 to build both zips and publish them as a GitHub release.
+# Run it manually (Actions > Release > Run workflow) to only build the zips as artifacts.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build, e.g. 0.2.0 (no release is published)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        run: |
+          $version = if ('${{ github.event_name }}' -eq 'push') { '${{ github.ref_name }}'.TrimStart('v') } else { '${{ inputs.version }}' }
+          if ($version -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$') { throw "Not a valid version: '$version'" }
+          "value=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Build zips
+        shell: pwsh
+        run: ./tools/package.ps1 -Version ${{ steps.version.outputs.value }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Visio-${{ steps.version.outputs.value }}
+          path: dist/*.zip
+          if-no-files-found: error
+
+      - name: Publish release
+        if: github.event_name == 'push'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = '${{ steps.version.outputs.value }}'
+          $extra = @()
+          if ($version -like '*-*') { $extra += '--prerelease' }  # e.g. v0.2.0-beta.1
+          $assets = (Get-ChildItem dist/*.zip).FullName
+          gh release create '${{ github.ref_name }}' @assets `
+            --title "Visio $version" `
+            --notes-file .github/release-notes.md `
+            --generate-notes @extra
+          if ($LASTEXITCODE -ne 0) { throw 'gh release create failed' }

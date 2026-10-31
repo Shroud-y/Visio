@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="uk">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,29 +9,29 @@
 </head>
 <body>
   <header id="toolbar">
-    <button id="btn-open" title="Відкрити (Ctrl+O)">Відкрити</button>
+    <button id="btn-open" title="Open (Ctrl+O)">Open</button>
     <span id="file-name"></span>
     <span class="spacer"></span>
     <div id="zoom" class="group" hidden>
-      <button id="btn-zoom-out" title="Зменшити (Ctrl+-)">−</button>
+      <button id="btn-zoom-out" title="Zoom out (Ctrl+-)">−</button>
       <button id="btn-zoom-reset" title="100% (Ctrl+0)">100%</button>
-      <button id="btn-zoom-in" title="Збільшити (Ctrl+=)">+</button>
+      <button id="btn-zoom-in" title="Zoom in (Ctrl+=)">+</button>
     </div>
-    <button id="btn-find" title="Пошук (Ctrl+F)" hidden>Пошук</button>
+    <button id="btn-find" title="Find (Ctrl+F)" hidden>Find</button>
   </header>
 
   <div id="find-bar" hidden>
-    <input id="find-input" type="search" placeholder="Знайти в документі" autocomplete="off">
-    <button id="find-prev" title="Попереднє (Shift+Enter)">↑</button>
-    <button id="find-next" title="Наступне (Enter)">↓</button>
-    <button id="find-close" title="Закрити (Esc)">✕</button>
+    <input id="find-input" type="search" placeholder="Find in document" autocomplete="off">
+    <button id="find-prev" title="Previous (Shift+Enter)">↑</button>
+    <button id="find-next" title="Next (Enter)">↓</button>
+    <button id="find-close" title="Close (Esc)">✕</button>
   </div>
 
   <main id="viewport">
     <div id="empty" class="message">
-      <div class="big">Перетягніть файл сюди</div>
-      <div>або натисніть «Відкрити» (Ctrl+O)</div>
-      <div class="hint">PDF · DOCX · XLSX · CSV · PPTX · RTF · MD · TXT · зображення · відео</div>
+      <div class="big">Drop a file here</div>
+      <div>or click Open (Ctrl+O)</div>
+      <div class="hint">PDF · DOCX · XLSX · CSV · PPTX · RTF · MD · TXT · images · video</div>
     </div>
     <div id="content" hidden></div>
     <div id="status" class="message" hidden></div>
