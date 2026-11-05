@@ -57,24 +57,6 @@ Keys: `Ctrl+O` open · `Ctrl+F` / `F3` find · `Ctrl+wheel`, `Ctrl+=`, `Ctrl+-`,
 dotnet publish src/Visio -c Release -o dist/Visio
 ```
 
-Release zips (same as CI):
-
-```bash
-powershell -ExecutionPolicy Bypass -File tools/package.ps1 -Version 0.1.0
-```
-
-## Releasing
-
-Push a version tag; the [Release workflow](.github/workflows/release.yml) builds both zips and publishes a GitHub
-release with them:
-
-```bash
-git tag v0.1.0 && git push origin v0.1.0
-```
-
-Tags with a suffix (`v0.2.0-beta.1`) become pre-releases. Running the workflow manually from the Actions tab only builds
-the zips as artifacts. The release text comes from [.github/release-notes.md](.github/release-notes.md).
-
 ## Layout
 
 - `viewer/` — the HTML/JS renderer. It also works in a plain browser: run `python -m http.server` in the repo root and
